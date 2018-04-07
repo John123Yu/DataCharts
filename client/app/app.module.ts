@@ -1,5 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { JwtModule } from '@auth0/angular-jwt';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 
 import { RoutingModule } from './routing.module';
 import { SharedModule } from './shared/shared.module';
@@ -39,6 +40,7 @@ export function tokenGetter() {
   imports: [
     RoutingModule,
     SharedModule,
+    LeafletModule.forRoot(),
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
