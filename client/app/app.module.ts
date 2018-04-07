@@ -16,6 +16,7 @@ import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { AccountComponent } from './account/account.component';
 import { AdminComponent } from './admin/admin.component';
+import { NycDemographicsComponent } from './nyc-demographics/nyc-demographics.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 export function tokenGetter() {
@@ -32,6 +33,7 @@ export function tokenGetter() {
     LogoutComponent,
     AccountComponent,
     AdminComponent,
+    NycDemographicsComponent,
     NotFoundComponent
   ],
   imports: [
