@@ -18,6 +18,7 @@ import { LogoutComponent } from './logout/logout.component';
 import { AccountComponent } from './account/account.component';
 import { AdminComponent } from './admin/admin.component';
 import { NycDemographicsComponent } from './nyc-demographics/nyc-demographics.component';
+import { ZipcodeTaxComponent } from './zipcode-tax/zipcode-tax.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 export function tokenGetter() {
@@ -35,7 +36,8 @@ export function tokenGetter() {
     AccountComponent,
     AdminComponent,
     NycDemographicsComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    ZipcodeTaxComponent
   ],
   imports: [
     RoutingModule,
