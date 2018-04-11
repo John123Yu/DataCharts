@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import * as zipcode_tax_cluster from './tax_by_zip_codes_kmeans-noN1.js';
 import { tileLayer, latLng, marker, icon, circleMarker } from 'leaflet';
+import * as cluster_means from './cluster_means 2.js';
 
+var green = 0,
+	grey = 0, 
+	red = 0, 
+	blue = 0, 
+	orange = 0;
 
 @Component({
   selector: 'app-zipcode-tax',
@@ -11,8 +17,8 @@ import { tileLayer, latLng, marker, icon, circleMarker } from 'leaflet';
 export class ZipcodeTaxComponent implements OnInit {
 
   constructor() {
-    console.log(zipcode_tax_cluster['y_kmeans'])
-    console.log(zipcode_tax_cluster)
+    //console.log(zipcode_tax_cluster['y_kmeans'])
+    //console.log(zipcode_tax_cluster)
     for(var zipcode in zipcode_tax_cluster['y_kmeans']){
     	if(zipcode_tax_cluster['latitude'][zipcode] == null)
     		continue;
@@ -21,7 +27,15 @@ export class ZipcodeTaxComponent implements OnInit {
     	let circle_marker = this.circle_marker([ zipcode_tax_cluster['latitude'][zipcode], zipcode_tax_cluster['longitude'][zipcode] ], zipcode_tax_cluster['y_kmeans'][zipcode], zipcode)
     	this.layers.push(circle_marker)
     }
+    console.log(cluster_means)
+    console.log("green: ", green)
+    console.log("red: ", red)
+    console.log("grey: ", grey)
+    console.log("orange: ", orange)
+    console.log("blue: ", blue)
   }
+
+  cluster_means = cluster_means;
 
   ngOnInit() {
   }
@@ -36,16 +50,28 @@ export class ZipcodeTaxComponent implements OnInit {
 
   circle_marker(latLng, color, zipcode) {
   	//console.log(latLng, color, zipcode)
-  	if(color == 0)
+  	if(color == 0) {
+  		color = 'green';
+  		green++;
+  	}
+  	if(color == 1) {
+  		color = 'orange'
+  		orange++;
+  	}
+  	if(color == 2) {
   		color = 'red'
-  	if(color == 1)
+  		red++;
+  	}
+  	if(color == 3) {
   		color = 'blue'
-  	if(color == 2)
-  		color = 'green'
-  	if(color == 3)
-  		color = 'yellow'
+  		blue++;
+  	}
+  	if(color == 4) {
+  		color = 'grey'
+  		grey++;
+  	}
   	let circle_marker = circleMarker( latLng, {
-	  radius: 1,
+	  radius: .5,
 	  color: color,
 	  className : zipcode
 	}).on("click", this.circleClick);

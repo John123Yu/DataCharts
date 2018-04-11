@@ -37,6 +37,7 @@ export class NycDemographicsComponent implements OnInit {
   //blues are very homogenous
   //red less homogenous
   //green is least homogenous
+
   layers = [ this.googleMaps ]
 
   circleClick(e) {
@@ -69,8 +70,8 @@ export class NycDemographicsComponent implements OnInit {
   	//console.log(this.demographic_object)
     console.log(Zipcode_Cluster)
     for(var zipcode in Zipcode_Cluster[0]){
-    	let circle_marker = this.circle_marker([ Zipcode_Cluster['LAT'][zipcode], Zipcode_Cluster['LNG'][zipcode] ], Zipcode_Cluster[0][zipcode], zipcode)
-    	this.layers.push(circle_marker)
+    	let circle_marker = this.circle_marker([ Zipcode_Cluster['LAT'][zipcode], Zipcode_Cluster['LNG'][zipcode] ], Zipcode_Cluster[0][zipcode], zipcode);
+    	this.layers.push(circle_marker);
     }
 
   }
