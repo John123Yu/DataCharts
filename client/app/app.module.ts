@@ -1,6 +1,10 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { BrowserModule }  from '@angular/platform-browser';
 import { JwtModule } from '@auth0/angular-jwt';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { ChartModule } from 'angular2-highcharts';
+//import * as highchart from 'highcharts';
+import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
 
 import { RoutingModule } from './routing.module';
 import { SharedModule } from './shared/shared.module';
@@ -17,12 +21,28 @@ import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { AccountComponent } from './account/account.component';
 import { AdminComponent } from './admin/admin.component';
-import { NycDemographicsComponent } from './nyc-demographics/nyc-demographics.component';
 import { ZipcodeTaxComponent } from './zipcode-tax/zipcode-tax.component';
+import { HighchartsZipcodeTaxComponent } from './highcharts-zipcode-tax/highcharts-zipcode-tax.component';
 import { NotFoundComponent } from './not-found/not-found.component';
+
+declare var require: any;
 
 export function tokenGetter() {
   return localStorage.getItem('token');
+}
+
+export function highchartsFactory() {
+  const hc = require('highcharts');
+  const hcm = require('highcharts/highcharts-more'); // used for more category of charts
+  const histogram = require('highcharts-histogram-bellcurve');
+  const exporting = require('highcharts/modules/exporting');
+  histogram(hc); // as per the requirement
+  return hc;
+}
+
+var HighchartsService = {
+  provide: HighchartsStatic,
+  useFactory: highchartsFactory
 }
 
 @NgModule({
@@ -35,14 +55,16 @@ export function tokenGetter() {
     LogoutComponent,
     AccountComponent,
     AdminComponent,
-    NycDemographicsComponent,
     NotFoundComponent,
-    ZipcodeTaxComponent
+    ZipcodeTaxComponent,
+    HighchartsZipcodeTaxComponent
   ],
   imports: [
     RoutingModule,
     SharedModule,
     LeafletModule.forRoot(),
+    BrowserModule,
+    ChartModule,
     JwtModule.forRoot({
       config: {
         tokenGetter: tokenGetter,
@@ -55,7 +77,8 @@ export function tokenGetter() {
     AuthGuardLogin,
     AuthGuardAdmin,
     CatService,
-    UserService
+    UserService,
+    HighchartsService
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]

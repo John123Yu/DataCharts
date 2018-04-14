@@ -8,8 +8,8 @@ import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { AccountComponent } from './account/account.component';
 import { AdminComponent } from './admin/admin.component';
-import { NycDemographicsComponent } from './nyc-demographics/nyc-demographics.component';
 import { ZipcodeTaxComponent } from './zipcode-tax/zipcode-tax.component';
+import { HighchartsZipcodeTaxComponent } from './highcharts-zipcode-tax/highcharts-zipcode-tax.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 
 import { AuthGuardLogin } from './services/auth-guard-login.service';
@@ -25,7 +25,7 @@ const routes: Routes = [
   { path: 'admin', component: AdminComponent, canActivate: [AuthGuardAdmin] },
   { path: 'notfound', component: NotFoundComponent },
   { path: 'zipcode-tax', component: ZipcodeTaxComponent },
-  { path: 'nyc-demographics', component: NycDemographicsComponent },
+  { path: 'zipcode-tax-column', component: HighchartsZipcodeTaxComponent },
   { path: '**', redirectTo: '/notfound' },
 ];
 

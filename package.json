@@ -35,6 +35,7 @@
     "@angular/router": "^5.2.0",
     "@asymmetrik/ngx-leaflet": "^3.0.2",
     "@auth0/angular-jwt": "1.0.0-beta.9",
+    "angular2-highcharts": "^0.5.5",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "bootstrap": "^4.0.0",
