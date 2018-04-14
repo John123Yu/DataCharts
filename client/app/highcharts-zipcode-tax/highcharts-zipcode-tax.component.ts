@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import * as A02650_c1 from './A02650_cluster1';
-import { Chart } from 'angular-highcharts';
+import * as d3 from 'd3-selection';
+import * as d3Scale from 'd3-scale';
+import * as d3Shape from 'd3-shape';
+import * as d3Array from 'd3-array';
+import * as d3Axis from 'd3-axis';
 
-declare var require: any;
-//const histogram = require('highcharts-histogram-bellcurve');
+import { Stocks } from '../shared/data';
 
 @Component({
   selector: 'app-highcharts-zipcode-tax',
@@ -12,53 +15,69 @@ declare var require: any;
 })
 export class HighchartsZipcodeTaxComponent implements OnInit {
   
-  data = [3.5, 3, 3.2, 3.1, 3.6, 3.9, 3.4, 3.4, 2.9, 3.1, 3.7, 3.4, 3, 3, 4, 4.4, 3.9, 3.5, 3.8, 3.8, 3.4, 3.7, 3.6, 3.3, 3.4, 3, 3.4, 3.5, 3.4, 3.2, 3.1, 3.4, 4.1, 4.2, 3.1, 3.2, 3.5, 3.6, 3, 3.4, 3.5, 2.3, 3.2, 3.5, 3.8, 3, 3.8, 3.2, 3.7, 3.3, 3.2, 3.2, 3.1, 2.3, 2.8, 2.8, 3.3, 2.4, 2.9, 2.7, 2, 3, 2.2, 2.9, 2.9, 3.1, 3, 2.7, 2.2, 2.5, 3.2, 2.8, 2.5, 2.8, 2.9, 3, 2.8, 3, 2.9, 2.6, 2.4, 2.4, 2.7, 2.7, 3, 3.4, 3.1, 2.3, 3, 2.5, 2.6, 3, 2.6, 2.3, 2.7, 3, 2.9, 2.9, 2.5, 2.8, 3.3, 2.7, 3, 2.9, 3, 3, 2.5, 2.9, 2.5, 3.6, 3.2, 2.7, 3, 2.5, 2.8, 3.2, 3, 3.8, 2.6, 2.2, 3.2, 2.8, 2.8, 2.7, 3.3, 3.2, 2.8, 3, 2.8, 3, 2.8, 3.8, 2.8, 2.8, 2.6, 3, 3.4, 3.1, 3, 3.1, 3.1, 3.1, 2.7, 3.2, 3.3, 3, 2.5, 3, 3.4, 3];
+  title: string = 'D3.js with Angular 2!';
+  subtitle: string = 'Line Chart';
+
+  private margin = {top: 20, right: 20, bottom: 30, left: 50};
+  private width: number;
+  private height: number;
+  private x: any;
+  private y: any;
+  private svg: any;
+  private line: d3Shape.Line<[number, number]>;
 
   constructor() {
-    console.log(A02650_c1)
-    this.chart._options.series[1].data = this.data
-    console.log(this.chart._options.series[1].data);
+    this.width = 900 - this.margin.left - this.margin.right;
+    this.height = 500 - this.margin.top - this.margin.bottom;
   }
-
-  chart = new Chart({
-      title: {
-        text: 'Highcharts Histogram'
-    },
-    xAxis: [{
-        title: { text: 'Data' },
-        alignTicks: false
-    }, {
-        title: { text: 'Histogram' },
-        alignTicks: false,
-        opposite: true
-    }],
-
-    yAxis: [{
-        title: { text: 'Data' }
-    }, {
-        title: { text: 'Histogram' },
-        opposite: true
-    }],
-
-    series: [{
-        name: 'Histogram',
-        type: 'histogram',
-        xAxis: 1,
-        yAxis: 1,
-        baseSeries: 's1',
-        zIndex: -1
-    }, {
-        name: 'Data',
-        type: 'scatter',
-        data: [],
-        id: 's1',
-        marker: {
-            radius: 1.5
-        }
-    }]
-  });
 
   ngOnInit() {
+  	this.initSvg();
+    this.initAxis();
+    this.drawAxis();
+    this.drawLine();
   }
 
+  private initSvg() {
+    this.svg = d3.select("svg")
+                 .append("g")
+                 .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
+  }
+
+  private initAxis() {
+    this.x = d3Scale.scaleTime().range([0, this.width]);
+    this.y = d3Scale.scaleLinear().range([this.height, 0]);
+    this.x.domain(d3Array.extent(Stocks, (d) => d.date ));
+    this.y.domain(d3Array.extent(Stocks, (d) => d.value ));
+  }
+
+  private drawAxis() {
+
+    this.svg.append("g")
+          .attr("class", "axis axis--x")
+          .attr("transform", "translate(0," + this.height + ")")
+          .call(d3Axis.axisBottom(this.x));
+
+    this.svg.append("g")
+          .attr("class", "axis axis--y")
+          .call(d3Axis.axisLeft(this.y))
+          .append("text")
+          .attr("class", "axis-title")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text("Price ($)");
+  }
+
+  private drawLine() {
+    this.line = d3Shape.line()
+                       .x( (d: any) => this.x(d.date) )
+                       .y( (d: any) => this.y(d.value) );
+
+    this.svg.append("path")
+            .datum(Stocks)
+            .attr("class", "line")
+            .attr("d", this.line);
+  }
 }

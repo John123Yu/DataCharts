@@ -6,10 +6,6 @@ import { ChartModule, HIGHCHARTS_MODULES } from 'angular-highcharts';
 import * as exporting from 'highcharts/modules/exporting.src';
 import * as histogramBellcurve from 'highcharts/modules/histogram-bellcurve.src';
 
-//import { ChartModule } from 'angular2-highcharts';
-//import * as highchart from 'highcharts';
-//import { HighchartsStatic } from 'angular2-highcharts/dist/HighchartsService';
-
 import { RoutingModule } from './routing.module';
 import { SharedModule } from './shared/shared.module';
 import { CatService } from './services/cat.service';
@@ -34,21 +30,6 @@ declare var require: any;
 export function tokenGetter() {
   return localStorage.getItem('token');
 }
-
-//export function highchartsFactory() {
-//  const hc = require('highcharts');
-//  const hcm = require('highcharts/highcharts-more'); // used for more category of charts
-//  const histogram = require('highcharts-histogram-bellcurve');
-//  const exporting = require('highcharts/modules/exporting');
-//  histogram(hc); // as per the requirement
-// return hc;
-//}
-
-//var HighchartsService = {
-//  provide: HighchartsStatic,
-//  useFactory: highchartsFactory
-//}
-
 export function highchartsModules() {
   return [exporting, histogramBellcurve];
 }
