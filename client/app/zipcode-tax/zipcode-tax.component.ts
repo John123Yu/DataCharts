@@ -24,8 +24,8 @@ export class ZipcodeTaxComponent implements OnInit {
     subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
     detectRetina: true
   });
-  layers = [ this.googleMaps ]
-  marker_ = true;
+  layers =  []
+
   constructor() {
     //console.log(zipcode_tax_cluster['y_kmeans'])
     console.log(zipcode_tax_cluster)
@@ -35,12 +35,6 @@ export class ZipcodeTaxComponent implements OnInit {
     	if(zipcode_tax_cluster['longitude'][zipcode] == null)
     		continue;
     	let circle_marker = this.circle_marker([ zipcode_tax_cluster['latitude'][zipcode], zipcode_tax_cluster['longitude'][zipcode] ], zipcode_tax_cluster['y_kmeans'][zipcode], zipcode)
-    	if(this.marker_) {
-    		console.log(this.layers)
-    		this.marker_ = false;
-    	}
-    	//console.log(circle_marker)
-    	//console.log(this.layers)
     	this.layers.push(circle_marker)
     }
     console.log(cluster_means)
@@ -50,6 +44,8 @@ export class ZipcodeTaxComponent implements OnInit {
     console.log("yellow: ", yellow)
     console.log("blue: ", blue)
     console.log("green", green)
+    this.layers.push(this.googleMaps)
+    //console.log(this.layers)
   }
 
   cluster_means = cluster_means;
