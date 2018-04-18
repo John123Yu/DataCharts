@@ -101,7 +101,7 @@ export class ZipcodeTaxComponent implements OnInit {
   options = {
 	layers: this.layers,
 	zoom: 5,
-	center: latLng(40.7128, -74.0060)
+	center: latLng(40.7128, -90.0060)
   };
 
 }

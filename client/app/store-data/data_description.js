@@ -1,6 +1,6 @@
 module.exports = {
 	A02650 : "Total income amount",
-	A00100 : "Adjust gross income"
+	A00100 : "Adjust gross income",
 	A00101 : "Amount of AGI for itemized returns",
 	A00200 : "Salaries and wages amount",
 	A00300 : "Taxable interest amount",

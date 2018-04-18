@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs/Subscription';
 import { ActivatedRoute, Params } from '@angular/router';
 import { StoreDataService } from '../services/storeData.service';
 import { Data } from '../shared/models/data.model';
+import * as data_description from '../store-data/data_description';
 
 @Component({
   selector: 'app-highcharts-zipcode-tax',
@@ -27,7 +28,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
   private id : number;
   private route$ : Subscription;
 
-  public margin = {top: 20, right: 20, bottom: 30, left: 50};
+  public margin = {top: 20, right: 20, bottom: 30, left: 20};
   public width: number;
   public height: number;
   public x: any;
@@ -49,7 +50,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
   public legendRectSize = 18;
   public legendSpacing = 4;
   public cluster_tracker = {
-  			purple: true,
+  			yellow: true,
   			orange: true,
   			grey: true,
   			red: true,
@@ -80,6 +81,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
 			(res) => {
 				console.log(res)
 				this.title = res.name;
+				this.subtitle = data_description[res.name];
 				this.complete_list = res.data_list;
 				this.data = res.data_object;
 				this.complete_list.sort( (a, b) => { return a - b; });
@@ -117,8 +119,8 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
 	    this.drawAxis();
 	    this.initLegend();
 	    this.initArrows();
-	    if(this.cluster_tracker['purple'])
-	    	this.histogram(this.data[0], 'purple');
+	    if(this.cluster_tracker['yellow'])
+	    	this.histogram(this.data[0], 'yellow');
 	   	if(this.cluster_tracker['orange'])
 			this.histogram(this.data[1], 'orange');
 		if(this.cluster_tracker['grey'])
@@ -186,7 +188,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
   	private initLegend() {
 	  	this.legend = d3.select("svg").selectAll('.legend')
 	  		.data([ 
-		  		{name: "cluster 1", color: "purple"},
+		  		{name: "cluster 1", color: "yellow"},
 		  		{name: "cluster 2", color: "orange"},
 		  		{name: "cluster 3", color: "grey"},
 		  		{name: "cluster 4", color: "red"},
@@ -198,7 +200,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
 			.attr('transform',(d, i) => {
 				var height = this.legendRectSize + this.legendSpacing;          // NEW
 	            var offset =  -this.height / 4;     // NEW
-	            var horz = 800;                       // NEW
+	            var horz = 1000;                       // NEW
 	            var vert = i * height - offset; 
 				return "translate(" + horz + "," +  vert + ")";
 		});
@@ -238,7 +240,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
 			.attr('transform',(d, i) => {
 				var height = this.legendRectSize + this.legendSpacing;          // NEW
 	            var offset =  -this.height / 4;     // NEW
-	            var horz = 800;                       // NEW
+	            var horz = 1000;                       // NEW
 	            var vert = (i * height - offset) + 170; 
 				return "translate(" + horz + "," +  vert + ")";
 		});
@@ -250,13 +252,13 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
 			.on('click', (label) => {
 				d3.selectAll("svg > *").remove();
 				if(label.name == 'XOP')
-					this.x_o += 50;
+					this.x_o += this.x_move;
 				if(label.name == 'XOM')
-					this.x_o -= 50;
+					this.x_o -= this.x_move;
 				if(label.name == 'XEP')
-					this.x_e += 50;
+					this.x_e += this.x_move;
 				if(label.name == 'XEM')
-					this.x_e -= 50;
+					this.x_e -= this.x_move;
 				if(label.name == 'YOP')
 					this.y_o += 50;
 				if(label.name == 'YOM')

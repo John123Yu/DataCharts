@@ -30,7 +30,7 @@ export class StoreDataComponent implements OnInit {
   isLoading = true;
   isEditing = false;
 
-  addDataForm: FormGroup;
+  //addDataForm: FormGroup;
   name = new FormControl('', Validators.required);
 
   constructor(private storeDataService: StoreDataService,
@@ -60,7 +60,10 @@ export class StoreDataComponent implements OnInit {
     this.storeDataService.getDatas().subscribe(
       data => {
         this.datas = data;
-        this.datas.push(this.data);
+        for(var i=0; i<this.datas.length; i++) {
+          this.datas[i]['description'] = data_description[this.datas[i].name]
+        }
+        //this.datas.push(this.data);
       },
       error => console.log(error),
       () => this.isLoading = false
