@@ -1,27 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import * as cluster1 from './A02650_cluster1';
-import * as cluster2 from './A02650_cluster2';
-import * as cluster3 from './A02650_cluster3';
-import * as cluster4 from './A02650_cluster4';
-import * as cluster5 from './A02650_cluster5';
-import * as cluster6 from './A02650_cluster6';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+//import * as cluster1 from './A02650_cluster1';
+//import * as cluster2 from './A02650_cluster2';
+//import * as cluster3 from './A02650_cluster3';
+//import * as cluster4 from './A02650_cluster4';
+//import * as cluster5 from './A02650_cluster5';
+//import * as cluster6 from './A02650_cluster6';
 import * as d3 from 'd3';
 import * as d3Scale from 'd3-scale';
 import * as d3Shape from 'd3-shape';
 import * as d3Array from 'd3-array';
 import * as d3Axis from 'd3-axis';
-
-import { Stocks } from '../shared/data';
+import { Subscription } from 'rxjs/Subscription';
+import { ActivatedRoute, Params } from '@angular/router';
+import { StoreDataService } from '../services/storeData.service';
+import { Data } from '../shared/models/data.model';
 
 @Component({
   selector: 'app-highcharts-zipcode-tax',
   templateUrl: './highcharts-zipcode-tax.component.html',
   styleUrls: ['./highcharts-zipcode-tax.component.css']
 })
-export class HighchartsZipcodeTaxComponent implements OnInit {
+export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
   
-  title: string = 'Total Income Amount - A02650';
+  title: string = '';
   subtitle: string = '';
+  private id : number;
+  private route$ : Subscription;
 
   public margin = {top: 20, right: 20, bottom: 30, left: 50};
   public width: number;
@@ -40,6 +44,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit {
   public cluster_max = 0;
   public bar = {};
   public legend;
+  public control_panel;
   public list_of_clusters
   public legendRectSize = 18;
   public legendSpacing = 4;
@@ -52,40 +57,64 @@ export class HighchartsZipcodeTaxComponent implements OnInit {
   			green: true
   		};
   public cluster_safe;
+  public x_e = 500;
+  public y_e = 0;
+  public x_o = 0;
+  public y_o = 0;
+  public complete_list = {};
+  public data_ = new Data();
 
-  constructor() {
-  }
+  	constructor(private storeDataService: StoreDataService, private route : ActivatedRoute) {
+  	}
 
   	ngOnInit() {
-	  	this.chart()
-	  	this.cluster_safe = this.list_of_clusters;
-	}
+  		this.route$ = this.route.params.subscribe(
+            (params : Params) => {
+                this.id = params["id"]; // cast to number
+            }
+        );
+		console.log(this.id)
+		this.data_._id = this.id.toString();
+		this.storeDataService.getData(this.data_).subscribe(
+			(res) => {
+				console.log(res)
+				this.title = res.name;
+				this.complete_list = res.data_list;
+				this.data = res.data_object;
+				this.complete_list.sort( (a, b) => { return a - b; });
+				var q1 = this.complete_list[Math.floor((this.complete_list.length / 4))];
+				var q3 = this.complete_list[Math.ceil((this.complete_list.length * (3 / 4)))];
+				var iqr = q3 - q1;
+				var maxValue = q3 + iqr*4;
+		    	var minValue = q1 - iqr*4;
+		    	console.log("q1 ", q1)
+		    	console.log("q3 ", q3)
+		    	console.log("iqr ", iqr)
+		    	console.log(maxValue, minValue)
+		    	var filteredValues = this.complete_list.filter( (x) => {
+			        return (x <= maxValue);
+			    });
+			    console.log(filteredValues[filteredValues.length - 1])
+			    this.x_e = filteredValues[filteredValues.length - 1]
+			    console.log(filteredValues[0])
+			  	this.chart(true)
+			},
+			error => console.log(error)
+		)
 
-	chart() {
-		this.list_of_clusters = {	
-									0: cluster1,
-									1: cluster2,
-									2: cluster3, 
-									3: cluster4, 
-									4: cluster5, 
-									5: cluster6
-								};
-		for(var i in this.list_of_clusters) {
-		    this.data[i] = [];
-		    for(var item in this.list_of_clusters[i]) {
-		        this.data[i].push(this.list_of_clusters[i][item])
-		        if(this.list_of_clusters[i][item] > this.cluster_max)
-		            this.cluster_max = this.list_of_clusters[i][item]
-		    }
-		}
-		console.log(this.data)
-		
+	}
+	ngOnDestroy() {
+        if(this.route$) this.route$.unsubscribe();
+    }
+
+	chart(arg=null) {
 		this.initSvg();
-	  	this.width = 800
+	  	this.width = 1000
 	    this.height = 750
-	    this.initAxis();
+	    this.initAxis(arg);
 	    this.drawAxis();
 	    this.initLegend();
+	    this.initArrows();
 	    if(this.cluster_tracker['purple'])
 	    	this.histogram(this.data[0], 'purple');
 	   	if(this.cluster_tracker['orange'])
@@ -106,31 +135,30 @@ export class HighchartsZipcodeTaxComponent implements OnInit {
   	}
 
   	private initAxis(arg=null) {
-    	this.x = d3Scale.scaleLinear().domain([0,  500]).range([0, this.width])
-	    this.bins_max = d3Array.histogram().domain(this.x.domain()).thresholds(this.x.ticks(250))(this.data[1]);
-	    console.log(this.bins_max.length)
-	    //this.x = d3Scale.scaleLinear().domain([0,  2 * this.bins_max.length]).range([0, this.width])
-    	this.y = d3Scale.scaleLinear().domain([0, d3Array.max(this.bins_max, function(d) { return d.length; })]).range([this.height, 0]);
+  		if(arg) {
+	    	this.x = d3Scale.scaleLinear().domain([this.x_o,  this.x_e]).range([0, this.width])
+		    this.bins_max = d3Array.histogram().domain(this.x.domain()).thresholds(this.x.ticks(250))(this.data[1]);
+		    this.y_e = d3.max(this.bins_max, function(d) { return d.length; })
+	    	this.y = d3Scale.scaleLinear().domain([this.y_o, this.y_e]).range([this.height, 0]);
+  		} else {
+  			this.x = d3Scale.scaleLinear().domain([this.x_o,  this.x_e]).range([0, this.width])
+	    	this.y = d3Scale.scaleLinear().domain([this.y_o, this.y_e]).range([this.height, 0]);
+  		}
  	}
 
     private drawAxis(arg=null) {
       	this.xAxis = d3.axisBottom(this.x);
 	  	this.yAxis = d3.axisLeft(this.y);
 
-	  	if(!arg){
-			this.gX = this.g.append("g")
-		    	.attr("class", "axis axis--x")
-		  		.attr("transform", "translate(0," + this.height + ")")
-	    		.call(this.xAxis);
+		this.gX = this.g.append("g")
+	    	.attr("class", "axis axis--x")
+	  		.attr("transform", "translate(0," + this.height + ")")
+    		.call(this.xAxis);
 
-	    	this.gY = this.g.append("g")
-	    		.attr("class", "axis axis--y")
-	    		.attr("transform", "translate(10," + 0 + ")")
-	    		.call(this.yAxis);
-	  	} else {
-	  		console.log(this.gX.select('.axis--x'))
-	  		this.gX.select('.axis--x').attr("transform", "translate(0," + this.height + ")").call(this.xAxis);
-	  	}
+    	this.gY = this.g.append("g")
+    		.attr("class", "axis axis--y")
+    		.attr("transform", "translate(0," + 0 + ")")
+    		.call(this.yAxis);
   	}
 
   	private histogram(data, color) {
@@ -178,29 +206,9 @@ export class HighchartsZipcodeTaxComponent implements OnInit {
 			.attr('height', this.legendRectSize)
 			.style('fill', (d) => { return d.color; })
 			.on('click', (label) => {
-				console.log(label.color)
 				d3.selectAll("svg > *").remove();
 				var temp = this.cluster_tracker[label.color];
 				this.cluster_tracker[label.color] = !temp;
-				if(label.color == "purple")
-					var number = 0;
-				if(label.color == "orange")
-					var number = 1;
-				if(label.color == "grey")
-					var number = 2;
-				if(label.color == "red")
-					var number = 3;
-				if(label.color == "blue")
-					var number = 4;
-				if(label.color == "green")
-					var number = 5;
-
-				if(temp){
-					this.list_of_clusters[number] = "";
-				} else {
-					this.list_of_clusters[number] = this.cluster_safe[label.color];
-				}
-
 				this.chart()
 			});
 
@@ -210,4 +218,57 @@ export class HighchartsZipcodeTaxComponent implements OnInit {
 			.text( (d) => { return d.name; });
 	}
 
+	private initArrows() {
+
+	this.control_panel = d3.select("svg").selectAll('.control_panel')
+	  		.data([ 
+		  		{name: "XOP"},
+		  		{name: "XOM"},
+		  		{name: "XEP"},
+		  		{name: "XEM"},
+		  		{name: "YOP"},
+		  		{name: "YOM"},
+		  		{name: "YEP"},
+		  		{name: "YEM"},
+	  		]).enter()
+			.append('g')
+	  		.attr('class', 'legend')
+			.attr('transform',(d, i) => {
+				var height = this.legendRectSize + this.legendSpacing;          // NEW
+	            var offset =  -this.height / 4;     // NEW
+	            var horz = 800;                       // NEW
+	            var vert = (i * height - offset) + 170; 
+				return "translate(" + horz + "," +  vert + ")";
+		});
+
+	this.control_panel.append('rect')
+			.attr('width', this.legendRectSize)
+			.attr('height', this.legendRectSize)
+			.style('fill', (d) => { return "brown"; })
+			.on('click', (label) => {
+				d3.selectAll("svg > *").remove();
+				if(label.name == 'XOP')
+					this.x_o += 50;
+				if(label.name == 'XOM')
+					this.x_o -= 50;
+				if(label.name == 'XEP')
+					this.x_e += 50;
+				if(label.name == 'XEM')
+					this.x_e -= 50;
+				if(label.name == 'YOP')
+					this.y_o += 50;
+				if(label.name == 'YOM')
+					this.y_o -= 50;
+				if(label.name == 'YEP')
+					this.y_e += 50;
+				if(label.name == 'YEM')
+					this.y_e -= 50
+				this.chart()
+			});
+
+	this.control_panel.append('text')
+			.attr('x', this.legendRectSize + this.legendSpacing)
+			.attr('y', this.legendRectSize - this.legendSpacing)
+			.text( (d) => { return d.name; });
+	}
 }

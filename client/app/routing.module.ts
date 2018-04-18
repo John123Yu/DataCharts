@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AppComponent } from './app.component';
 import { CatsComponent } from './cats/cats.component';
+import { StoreDataComponent } from './store-data/store-data.component';
 import { AboutComponent } from './about/about.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
@@ -18,6 +19,7 @@ import { AuthGuardAdmin } from './services/auth-guard-admin.service';
 const routes: Routes = [
   { path: '', component: AboutComponent },
   { path: 'cats', component: CatsComponent },
+  { path: 'store-data', component: StoreDataComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   { path: 'logout', component: LogoutComponent },
@@ -25,7 +27,7 @@ const routes: Routes = [
   { path: 'admin', component: AdminComponent, canActivate: [AuthGuardAdmin] },
   { path: 'notfound', component: NotFoundComponent },
   { path: 'zipcode-tax', component: ZipcodeTaxComponent },
-  { path: 'zipcode-tax-column', component: HighchartsZipcodeTaxComponent },
+  { path: 'zipcode-tax-column/:id', component: HighchartsZipcodeTaxComponent },
   { path: '**', redirectTo: '/notfound' },
 ];
 

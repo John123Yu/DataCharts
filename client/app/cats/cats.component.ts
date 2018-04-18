@@ -30,8 +30,6 @@ export class CatsComponent implements OnInit {
     this.getCats();
     this.addCatForm = this.formBuilder.group({
       name: this.name,
-      age: this.age,
-      weight: this.weight
     });
   }
 

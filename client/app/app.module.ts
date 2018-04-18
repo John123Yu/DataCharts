@@ -11,10 +11,12 @@ import { SharedModule } from './shared/shared.module';
 import { CatService } from './services/cat.service';
 import { UserService } from './services/user.service';
 import { AuthService } from './services/auth.service';
+import { StoreDataService } from './services/storeData.service';
 import { AuthGuardLogin } from './services/auth-guard-login.service';
 import { AuthGuardAdmin } from './services/auth-guard-admin.service';
 import { AppComponent } from './app.component';
 import { CatsComponent } from './cats/cats.component';
+import { StoreDataComponent } from './store-data/store-data.component';
 import { AboutComponent } from './about/about.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
@@ -38,6 +40,7 @@ export function highchartsModules() {
   declarations: [
     AppComponent,
     CatsComponent,
+    StoreDataComponent,
     AboutComponent,
     RegisterComponent,
     LoginComponent,
@@ -67,6 +70,7 @@ export function highchartsModules() {
     AuthGuardAdmin,
     CatService,
     UserService,
+    StoreDataService,
     { provide: HIGHCHARTS_MODULES, useFactory: highchartsModules }
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
