@@ -61,8 +61,9 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
   public y_e = 0;
   public x_o = 0;
   public y_o = 0;
-  public complete_list = {};
   public data_ = new Data();
+  public complete_list: any;
+  public x_move;
 
   	constructor(private storeDataService: StoreDataService, private route : ActivatedRoute) {
   	}
@@ -85,6 +86,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
 				var q1 = this.complete_list[Math.floor((this.complete_list.length / 4))];
 				var q3 = this.complete_list[Math.ceil((this.complete_list.length * (3 / 4)))];
 				var iqr = q3 - q1;
+				this.x_move = iqr;
 				var maxValue = q3 + iqr*4;
 		    	var minValue = q1 - iqr*4;
 		    	console.log("q1 ", q1)
@@ -137,7 +139,7 @@ export class HighchartsZipcodeTaxComponent implements OnInit, OnDestroy {
   	private initAxis(arg=null) {
   		if(arg) {
 	    	this.x = d3Scale.scaleLinear().domain([this.x_o,  this.x_e]).range([0, this.width])
-		    this.bins_max = d3Array.histogram().domain(this.x.domain()).thresholds(this.x.ticks(250))(this.data[1]);
+		    this.bins_max = d3Array.histogram().domain(this.x.domain()).thresholds(this.x.ticks(200))(this.data[1]);
 		    this.y_e = d3.max(this.bins_max, function(d) { return d.length; })
 	    	this.y = d3Scale.scaleLinear().domain([this.y_o, this.y_e]).range([this.height, 0]);
   		} else {

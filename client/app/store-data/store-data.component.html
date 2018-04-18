@@ -16,15 +16,15 @@
       </tbody>
       <tbody *ngIf="!isEditing">
         <tr *ngFor="let data of datas">
-          <td><a [routerLink]="['/zipcode-tax-column', data._id]">{{data.name}}</a></td>
-          <td>
+          <td><a [routerLink]="['/zipcode-tax-column', data._id]">{{data.name}} : {{ data.description }}</a></td>
+<!--           <td>
             <button class="btn btn-sm btn-primary" (click)="addData(data)"><i class="fa fa-pencil"></i> Save</button> 
             <button class="btn btn-sm btn-danger" (click)="deleteData(data)"><i class="fa fa-trash"></i> Delete</button>
-          </td>
+          </td> -->
         </tr>  
       </tbody>
       <tbody *ngIf="isEditing">
-        <tr>
+        <!-- <tr>
           <td colspan="4">
             <form class="form-inline" #form="ngForm" (ngSubmit)="Data(data)">
               <input class="form-control mr-2" type="text" name="name" [(ngModel)]="data.name" placeholder="Name" required>
@@ -32,18 +32,8 @@
               <button class="btn btn-sm btn-warning" (click)="cancelEditing()"><i class="fa fa-times"></i> Cancel</button>
             </form>
           </td>
-        </tr>
+        </tr> -->
       </tbody>
     </table>
-  </div>
-</div>
-
-<div class="card" *ngIf="!isEditing">
-  <h4 class="card-header">Add new data</h4>
-  <div class="card-body">
-    <form class="form-inline" [formGroup]="addDataForm" (ngSubmit)="addData()">
-      <input class="form-control mr-2" type="text" name="name" formControlName="name" placeholder="Name">
-      <button class="btn btn-primary" type="submit" [disabled]="!addDataForm.valid"><i class="fa fa-floppy-o"></i> Add</button>
-    </form>
   </div>
 </div>
